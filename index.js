@@ -8,6 +8,7 @@ var app = express()
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
 var cors = require("cors")
+const { json } = require("express")
 app.use(cors({ optionsSuccessStatus: 200 })) // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -22,11 +23,20 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" })
 })
+app.get("/api/", function (req, res) {
+  const d = new Date()
+  const json = { unix: Date.parse(d), utc: d.toUTCString() }
+  res.json(json)
+})
 
 app.get("/api/:time", function (req, res) {
   const t = req.params.time
   const d = new Date(Number(t) ? Number(t) : t)
-  res.json({ unix: Date.parse(d), utc: d.toUTCString() })
+  const json =
+    d == "Invalid Date"
+      ? { error: "Invalid Date" }
+      : { unix: Date.parse(d), utc: d.toUTCString() }
+  res.json(json)
 })
 
 // listen for requests :)
